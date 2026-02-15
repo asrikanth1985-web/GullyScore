@@ -1,0 +1,5 @@
+{
+  "name": "GullyScore V2",
+  "description": "A comprehensive local-first cricket tournament management application. Track teams, players, live scoring, and detailed match statistics with full offline support.",
+  "requestFramePermissions": []
+}
