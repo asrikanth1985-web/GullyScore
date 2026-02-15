@@ -50,46 +50,20 @@
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 no-select">
     <div id="root"></div>
     
-    <!-- PWA Debug Status: Only visible if installation issues occur or for testing -->
-    <div id="pwa-debug" style="display:none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); color: #00ff00; font-family: monospace; font-size: 10px; padding: 4px; z-index: 9999; pointer-events: none;">
-        Initializing...
-    </div>
-
     <!-- Main Entry Point for Vite -->
     <script type="module" src="/index.tsx"></script>
 
     <script>
-        const debugEl = document.getElementById('pwa-debug');
-        function log(msg) {
-            // Uncomment to debug on mobile
-            // debugEl.style.display = 'block'; 
-            debugEl.innerHTML = msg;
-            console.log(msg);
-        }
-
         if ('serviceWorker' in navigator) {
-            // Check for HTTPS
-            if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-                debugEl.style.display = 'block';
-                debugEl.style.color = 'red';
-                log("ERROR: PWA requires HTTPS. Install button will NOT show.");
-            }
-
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(reg => log('SW Registered. Scope: ' + reg.scope))
+                    .then(reg => console.log('SW Registered. Scope: ' + reg.scope))
                     .catch(err => {
-                        debugEl.style.display = 'block';
-                        debugEl.style.color = 'red';
-                        log('SW Fail: ' + err);
+                        console.log('SW Fail: ' + err);
                     });
             });
-
-            window.addEventListener('beforeinstallprompt', (e) => {
-                log("Install Prompt Ready (Intercepted)");
-            });
         } else {
-            log("Service Worker not supported");
+            console.log("Service Worker not supported");
         }
     </script>
 </body>
