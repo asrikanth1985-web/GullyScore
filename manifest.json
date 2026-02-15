@@ -6,6 +6,12 @@
     {
       "src": "https://cdn-icons-png.flaticon.com/512/5359/5359146.png",
       "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/5359/5359146.png",
+      "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     }

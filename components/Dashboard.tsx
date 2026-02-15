@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Team, Match } from '../types';
 import { calculateInningsTotal, calculateInningsWickets, calculateLegalBalls, formatOvers } from '../utils/cricket';
 
@@ -26,6 +26,24 @@ const Dashboard: React.FC<DashboardProps> = ({
   onViewTournamentReport,
   onExportData
 }) => {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') setDeferredPrompt(null);
+  };
+
   const completedMatches = matches.filter(m => m.status === 'Completed');
   const liveMatches = matches.filter(m => m.status === 'Live');
   const recentMatches = [...matches]
@@ -71,6 +89,19 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-6 md:space-y-10 animate-in fade-in duration-500 pb-24">
+      {deferredPrompt && (
+        <div className="bg-emerald-600 text-white p-4 rounded-2xl flex items-center justify-between shadow-xl animate-bounce">
+          <div className="flex items-center gap-3">
+            <i className="fas fa-mobile-screen-button text-xl"></i>
+            <div>
+              <p className="font-black text-xs uppercase tracking-widest">Install App</p>
+              <p className="text-[10px] opacity-80">Use GullyScore directly from your home screen!</p>
+            </div>
+          </div>
+          <button onClick={handleInstallClick} className="bg-white text-emerald-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase">Install</button>
+        </div>
+      )}
+
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-1">
         <div>
           <div className="inline-block px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg font-black text-[9px] md:text-[10px] uppercase tracking-widest mb-2">
