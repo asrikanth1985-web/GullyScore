@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, (process as any).cwd(), '');
 
   return {
+    base: './', // Crucial for Electron: ensures assets are loaded via relative paths
     plugins: [
       react(),
       viteStaticCopy({
