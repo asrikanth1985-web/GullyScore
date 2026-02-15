@@ -29,9 +29,14 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [isGitHubRepo, setIsGitHubRepo] = useState(false);
 
   useEffect(() => {
-    // Detect if already installed/standalone
+    // Check if viewing code vs viewing app
+    if (window.location.hostname.includes('github.com') && !window.location.hostname.includes('github.io')) {
+      setIsGitHubRepo(true);
+    }
+
     if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
       setIsStandalone(true);
     }
@@ -45,6 +50,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, []);
 
   const handleInstallClick = async () => {
+    if (isGitHubRepo) {
+      alert("You are viewing the CODE on GitHub. To install the APP, you must first enable GitHub Pages in Settings and visit the live link.");
+      setShowInstallGuide(true);
+      return;
+    }
     if (!deferredPrompt) {
       setShowInstallGuide(true);
       return;
@@ -100,24 +110,28 @@ const Dashboard: React.FC<DashboardProps> = ({
     <div className="space-y-6 md:space-y-10 animate-in fade-in duration-500 pb-24">
       {/* Installation Banner */}
       {!isStandalone && (
-        <div className="bg-emerald-600 text-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+        <div className={`p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-between shadow-2xl relative overflow-hidden text-white ${isGitHubRepo ? 'bg-orange-600' : 'bg-emerald-600'}`}>
           <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12">
-            <i className="fas fa-mobile-screen-button text-6xl"></i>
+            <i className={`fas ${isGitHubRepo ? 'fa-triangle-exclamation' : 'fa-mobile-screen-button'} text-6xl`}></i>
           </div>
           <div className="flex items-center gap-4 relative z-10">
             <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-download text-lg"></i>
+              <i className={`fas ${isGitHubRepo ? 'fa-globe' : 'fa-download'} text-lg`}></i>
             </div>
             <div>
-              <p className="font-black text-xs md:text-sm uppercase tracking-widest leading-none mb-1">Use as Mobile App</p>
-              <p className="text-[10px] md:text-xs opacity-80 font-medium">Install to home screen for faster access and offline scoring.</p>
+              <p className="font-black text-xs md:text-sm uppercase tracking-widest leading-none mb-1">
+                {isGitHubRepo ? 'Deployment Required' : 'Use as Mobile App'}
+              </p>
+              <p className="text-[10px] md:text-xs opacity-80 font-medium">
+                {isGitHubRepo ? 'You are viewing code. Enable GitHub Pages to install.' : 'Install to home screen for faster access.'}
+              </p>
             </div>
           </div>
           <button 
             onClick={handleInstallClick} 
-            className="bg-white text-emerald-600 px-5 py-2 md:px-8 md:py-3 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-widest shadow-lg hover:bg-emerald-50 transition-colors relative z-10 whitespace-nowrap"
+            className="bg-white text-slate-900 px-5 py-2 md:px-8 md:py-3 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-widest shadow-lg hover:bg-emerald-50 transition-colors relative z-10 whitespace-nowrap"
           >
-            {deferredPrompt ? 'Install Now' : 'How to Install'}
+            {isGitHubRepo ? 'Learn How' : (deferredPrompt ? 'Install App' : 'Guide')}
           </button>
         </div>
       )}
@@ -125,42 +139,78 @@ const Dashboard: React.FC<DashboardProps> = ({
       {/* Manual Install Guide Modal */}
       {showInstallGuide && (
         <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 shadow-2xl border border-white/10 relative">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 shadow-2xl border border-white/10 relative overflow-y-auto max-h-[90vh]">
             <button onClick={() => setShowInstallGuide(false)} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400">
               <i className="fas fa-times"></i>
             </button>
             
-            <div className="text-center mb-10">
-              <div className="w-20 h-20 bg-emerald-600 text-white rounded-[1.5rem] flex items-center justify-center text-3xl mx-auto mb-6 shadow-xl">
-                <i className="fas fa-mobile-screen"></i>
+            <div className="text-center mb-8">
+              <div className={`w-20 h-20 ${isGitHubRepo ? 'bg-orange-600' : 'bg-emerald-600'} text-white rounded-[1.5rem] flex items-center justify-center text-3xl mx-auto mb-6 shadow-xl`}>
+                <i className={`fas ${isGitHubRepo ? 'fa-rocket' : 'fa-mobile-screen'}`}></i>
               </div>
-              <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-2">Install GullyScore</h3>
-              <p className="text-slate-500 dark:text-slate-400 font-medium">Follow these steps to add it to your phone</p>
+              <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-2">
+                {isGitHubRepo ? 'Almost There!' : 'Install GullyScore'}
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">
+                {isGitHubRepo ? 'Enable hosting to run the app on your phone' : 'Follow these steps to add it to your phone'}
+              </p>
             </div>
 
-            <div className="space-y-8">
-              <div className="flex gap-6">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">1</div>
-                <div>
-                  <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">Android / Chrome</h4>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Tap the <i className="fas fa-ellipsis-v mx-1"></i> (three dots) at the <span className="font-bold text-slate-700 dark:text-slate-200">top right</span> of your browser and select <span className="font-bold text-emerald-600">"Install App"</span>.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-6">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">2</div>
-                <div>
-                  <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">iPhone / Safari</h4>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Tap the <i className="fas fa-share-square mx-1"></i> (Share) button at the <span className="font-bold text-slate-700 dark:text-slate-200">bottom</span> and scroll down to <span className="font-bold text-emerald-600">"Add to Home Screen"</span>.</p>
-                </div>
-              </div>
+            <div className="space-y-6">
+              {isGitHubRepo ? (
+                <>
+                  <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 rounded-2xl">
+                    <p className="text-xs text-orange-800 dark:text-orange-400 font-bold leading-relaxed">
+                      You are currently looking at the <strong>GitHub Files</strong>. Browsers only show the "Install" option on <strong>Live Websites</strong>.
+                    </p>
+                  </div>
+                  <div className="flex gap-6">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">1</div>
+                    <div>
+                      <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">GitHub Settings</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Go to your Repository <strong>Settings</strong> > <strong>Pages</strong>.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-6">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">2</div>
+                    <div>
+                      <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">Enable Pages</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Select <strong>"Deploy from a branch"</strong> and pick <strong>"main"</strong>. Save.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-6">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">3</div>
+                    <div>
+                      <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">Visit App</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Open the <strong>.github.io</strong> link provided. <strong>Install from there!</strong></p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex gap-6">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">1</div>
+                    <div>
+                      <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">Android / Chrome</h4>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Tap <i className="fas fa-ellipsis-v mx-1"></i> (Top Right) and select <span className="font-bold text-emerald-600">"Install App"</span>.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-6">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">2</div>
+                    <div>
+                      <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">iPhone / Safari</h4>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Tap <i className="fas fa-share-square mx-1"></i> (Bottom) and select <span className="font-bold text-emerald-600">"Add to Home Screen"</span>.</p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <button 
               onClick={() => setShowInstallGuide(false)}
-              className="w-full mt-10 bg-slate-900 dark:bg-slate-800 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-slate-800 transition-all"
+              className="w-full mt-10 bg-slate-900 dark:bg-emerald-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:opacity-90 transition-all shadow-xl"
             >
-              Got it!
+              Understand
             </button>
           </div>
         </div>
