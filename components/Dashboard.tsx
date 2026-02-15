@@ -27,8 +27,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   onExportData
 }) => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    // Detect if already installed/standalone
+    if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
+      setIsStandalone(true);
+    }
+
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -38,7 +45,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      setShowInstallGuide(true);
+      return;
+    }
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') setDeferredPrompt(null);
@@ -57,7 +67,6 @@ const Dashboard: React.FC<DashboardProps> = ({
     if (!match.winnerId) return "Match Tied";
     const winner = teams.find(t => t.id === match.winnerId);
     if (!winner) return "Match Ended";
-
     const inn1 = match.innings[0];
     const inn2 = match.innings[1];
     if (inn1 && inn2) {
@@ -89,16 +98,71 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-6 md:space-y-10 animate-in fade-in duration-500 pb-24">
-      {deferredPrompt && (
-        <div className="bg-emerald-600 text-white p-4 rounded-2xl flex items-center justify-between shadow-xl animate-bounce">
-          <div className="flex items-center gap-3">
-            <i className="fas fa-mobile-screen-button text-xl"></i>
+      {/* Installation Banner */}
+      {!isStandalone && (
+        <div className="bg-emerald-600 text-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12">
+            <i className="fas fa-mobile-screen-button text-6xl"></i>
+          </div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <i className="fas fa-download text-lg"></i>
+            </div>
             <div>
-              <p className="font-black text-xs uppercase tracking-widest">Install App</p>
-              <p className="text-[10px] opacity-80">Use GullyScore directly from your home screen!</p>
+              <p className="font-black text-xs md:text-sm uppercase tracking-widest leading-none mb-1">Use as Mobile App</p>
+              <p className="text-[10px] md:text-xs opacity-80 font-medium">Install to home screen for faster access and offline scoring.</p>
             </div>
           </div>
-          <button onClick={handleInstallClick} className="bg-white text-emerald-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase">Install</button>
+          <button 
+            onClick={handleInstallClick} 
+            className="bg-white text-emerald-600 px-5 py-2 md:px-8 md:py-3 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-widest shadow-lg hover:bg-emerald-50 transition-colors relative z-10 whitespace-nowrap"
+          >
+            {deferredPrompt ? 'Install Now' : 'How to Install'}
+          </button>
+        </div>
+      )}
+
+      {/* Manual Install Guide Modal */}
+      {showInstallGuide && (
+        <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 shadow-2xl border border-white/10 relative">
+            <button onClick={() => setShowInstallGuide(false)} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400">
+              <i className="fas fa-times"></i>
+            </button>
+            
+            <div className="text-center mb-10">
+              <div className="w-20 h-20 bg-emerald-600 text-white rounded-[1.5rem] flex items-center justify-center text-3xl mx-auto mb-6 shadow-xl">
+                <i className="fas fa-mobile-screen"></i>
+              </div>
+              <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-2">Install GullyScore</h3>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">Follow these steps to add it to your phone</p>
+            </div>
+
+            <div className="space-y-8">
+              <div className="flex gap-6">
+                <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">1</div>
+                <div>
+                  <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">Android / Chrome</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Tap the <i className="fas fa-ellipsis-v mx-1"></i> (three dots) at the <span className="font-bold text-slate-700 dark:text-slate-200">top right</span> of your browser and select <span className="font-bold text-emerald-600">"Install App"</span>.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-6">
+                <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-emerald-500 shadow-sm shrink-0">2</div>
+                <div>
+                  <h4 className="font-black text-slate-800 dark:text-white uppercase text-xs tracking-widest mb-1">iPhone / Safari</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Tap the <i className="fas fa-share-square mx-1"></i> (Share) button at the <span className="font-bold text-slate-700 dark:text-slate-200">bottom</span> and scroll down to <span className="font-bold text-emerald-600">"Add to Home Screen"</span>.</p>
+                </div>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setShowInstallGuide(false)}
+              className="w-full mt-10 bg-slate-900 dark:bg-slate-800 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-slate-800 transition-all"
+            >
+              Got it!
+            </button>
+          </div>
         </div>
       )}
 
@@ -189,7 +253,6 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex justify-between items-center px-1">
             <h3 className="text-sm md:text-xl font-black text-slate-800 dark:text-white uppercase tracking-wider">Matches Summary</h3>
           </div>
-          
           {recentMatches.length === 0 ? (
             <div className="bg-white dark:bg-slate-900 p-12 rounded-[2rem] border-2 border-dashed border-slate-100 dark:border-slate-800 text-center">
               <i className="fas fa-calendar-xmark text-3xl text-slate-200 mb-4"></i>

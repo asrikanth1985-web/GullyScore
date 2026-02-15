@@ -2,24 +2,26 @@
 {
   "short_name": "GullyScore",
   "name": "GullyScore Cricket Manager",
+  "id": "com.gullyscore.cricket.v2",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/5359/5359146.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/5359/5359146.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
+  "start_url": "./",
   "background_color": "#0f172a",
   "display": "standalone",
-  "scope": "/",
+  "orientation": "portrait",
+  "scope": "./",
   "theme_color": "#059669",
-  "description": "Professional gully cricket tournament scoring and management."
+  "description": "Professional gully cricket tournament scoring and management with offline support."
 }
