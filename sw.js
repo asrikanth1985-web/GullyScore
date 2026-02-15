@@ -1,12 +1,14 @@
 
-const CACHE_NAME = 'gullyscore-v3';
+const CACHE_NAME = 'gullyscore-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
+  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+  // CRITICAL: This icon must be cached for Android to show the Install Prompt
+  'https://cdn-icons-png.flaticon.com/512/5359/5359146.png'
 ];
 
 // Install event: cache assets

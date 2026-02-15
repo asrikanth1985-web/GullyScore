@@ -8,7 +8,7 @@
       "src": "https://cdn-icons-png.flaticon.com/512/5359/5359146.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/5359/5359146.png",
@@ -17,7 +17,7 @@
       "purpose": "any"
     }
   ],
-  "start_url": "./",
+  "start_url": "./index.html",
   "background_color": "#0f172a",
   "display": "standalone",
   "orientation": "portrait",
