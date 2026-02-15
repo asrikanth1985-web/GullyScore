@@ -2,18 +2,27 @@
 {
   "name": "gullyscore",
   "version": "1.1.0",
-  "description": "Offline Desktop Cricket Tournament Manager",
+  "description": "Offline Cricket Tournament Manager",
   "main": "electron-main.js",
   "author": "GullyScore Team",
   "scripts": {
-    "start": "npx servor . index.html 8080 --reload",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "electron": "electron .",
-    "build": "electron-builder --win --portable"
+    "build:desktop": "electron-builder --win --portable"
   },
   "dependencies": {
-    "electron": "^28.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@google/genai": "^0.1.1",
+    "html2canvas": "^1.4.1"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2",
+    "vite-plugin-static-copy": "^1.0.6",
+    "electron": "^28.2.0",
     "electron-builder": "^24.9.1"
   },
   "build": {
@@ -24,12 +33,12 @@
       "artifactName": "${productName}.exe"
     },
     "directories": {
-      "output": "dist"
+      "output": "dist_electron"
     },
     "files": [
-      "**/*",
-      "!dist/**/*",
-      "!node_modules/**/*"
+      "dist/**/*",
+      "electron-main.js",
+      "package.json"
     ]
   }
 }
