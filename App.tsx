@@ -151,7 +151,7 @@ const App: React.FC = () => {
         <ul className="flex-1 flex flex-row md:flex-col items-center justify-around md:justify-start overflow-x-auto md:overflow-y-auto px-2 md:px-4 py-2 md:pb-4 space-x-1 md:space-x-0 md:space-y-1">
           {[
             { id: 'Tournaments', icon: 'fa-trophy', label: 'Leagues' },
-            { id: 'Dashboard', icon: 'fa-chart-pie', label: 'Home' },
+            { id: 'Dashboard', icon: 'fa-chart-pie', label: 'Dashboard' },
             { id: 'Teams', icon: 'fa-users-gear', label: 'Squads' },
             { id: 'NewMatch', icon: 'fa-circle-plus', label: 'New' },
             { id: 'MatchHistory', icon: 'fa-scroll', label: 'History' }
